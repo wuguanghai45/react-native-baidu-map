@@ -48,10 +48,10 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
     private ThemedReactContext mReactContext;
 
     private ReadableArray childrenPoints;
-    private HashMap<String, Marker> mMarkerMap = new HashMap<>();
     private HashMap<String, List<Marker>> mMarkersMap = new HashMap<>();
     private TextView mMarkerText;
     private Overlay circleMarker;
+    private Marker mMarker;
 
     public String getName() {
         return REACT_CLASS;
@@ -147,15 +147,10 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
     @ReactProp(name="marker")
     public void setMarker(MapView mapView, ReadableMap option) {
         if(option != null) {
-            String key = "marker_" + mapView.getId();
-            Marker marker = mMarkerMap.get(key);
-            if(marker != null) {
-                MarkerUtil.updateMaker(marker, option);
+            if(mMarker != null) {
+              mMarker.remove();
             }
-            else {
-                marker = MarkerUtil.addMarker(mapView, option);
-                mMarkerMap.put(key, marker);
-            }
+            mMarker = MarkerUtil.addMarker(mapView, option);
         }
     }
 
