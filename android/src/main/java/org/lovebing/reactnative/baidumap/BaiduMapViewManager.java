@@ -15,6 +15,7 @@ import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
+import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.SDKInitializer;
@@ -50,6 +51,7 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
     private HashMap<String, Marker> mMarkerMap = new HashMap<>();
     private HashMap<String, List<Marker>> mMarkersMap = new HashMap<>();
     private TextView mMarkerText;
+    private Overlay circleMarker;
 
     public String getName() {
         return REACT_CLASS;
@@ -128,6 +130,9 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
     @ReactProp(name="circle")
     public void setCircle(MapView mapView, ReadableMap option) {
         if(option != null) {
+          if (circleMarker != null) {
+            circleMarker.remove();
+          }
           double latitude = option.getDouble("latitude");
           double longitude = option.getDouble("longitude");
 
@@ -135,7 +140,7 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
           OverlayOptions ooCircle = new CircleOptions().fillColor(Color.parseColor("#4cFBCCCD"))
                   .center(llCircle).stroke(new Stroke(2, Color.parseColor("#FFD8ADAD")))
                   .radius(2400);
-          mapView.getMap().addOverlay(ooCircle);
+          circleMarker = mapView.getMap().addOverlay(ooCircle);
         }
     }
 
