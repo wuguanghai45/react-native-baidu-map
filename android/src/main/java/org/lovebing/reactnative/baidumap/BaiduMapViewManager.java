@@ -135,11 +135,12 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
           }
           double latitude = option.getDouble("latitude");
           double longitude = option.getDouble("longitude");
+          int radius = option.getInt("radius");
 
           LatLng llCircle = new LatLng(latitude, longitude);
           OverlayOptions ooCircle = new CircleOptions().fillColor(Color.parseColor("#4cFBCCCD"))
                   .center(llCircle).stroke(new Stroke(2, Color.parseColor("#FFD8ADAD")))
-                  .radius(2400);
+                  .radius(radius);
           circleMarker = mapView.getMap().addOverlay(ooCircle);
         }
     }
