@@ -155,6 +155,26 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
         }
     }
 
+    @ReactProp(name="trackPositions")
+    public void setTrackPositions(MapView mapView, ReadableMap option) {
+      if(option != null) {
+        ReadableArray trackArray = option.getArray("tracks");
+        LatLng[] latlngs = new LatLng[trackArray.size()];
+
+
+        for (int i = 0; i < trackArray.size(); i++) {
+          ReadableMap opt = trackArray.getMap(i);
+          double latitude = opt.getDouble("latitude");
+          double longitude = opt.getDouble("longitude");
+          latlngs[i] = new LatLng(latitude, longitude);
+        }
+
+        MapTrackPlay mapTrack =  new MapTrackPlay(mapView, latlngs);
+        mapTrack.drawPolyLine();
+        mapTrack.moveLooper();
+      }
+    }
+
     @ReactProp(name="markers")
     public void setMarkers(MapView mapView, ReadableArray options) {
         String key = "markers_" + mapView.getId();

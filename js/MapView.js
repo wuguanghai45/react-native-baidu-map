@@ -25,6 +25,7 @@ export default class MapView extends Component {
     circle: PropTypes.object,
     marker: PropTypes.object,
     markers: PropTypes.array,
+    trackPositions: PropTypes.object,
     childrenPoints: PropTypes.array,
     onMapStatusChangeStart: PropTypes.func,
     onMapStatusChange: PropTypes.func,
@@ -46,6 +47,7 @@ export default class MapView extends Component {
     markers: [],
     circle: null,
     center: null,
+    trackPositions: null,
     zoom: 10
   };
 
