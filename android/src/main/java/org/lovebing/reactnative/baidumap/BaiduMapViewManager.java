@@ -158,6 +158,7 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
     @ReactProp(name="trackPositions")
     public void setTrackPositions(MapView mapView, ReadableMap option) {
       if(option != null) {
+        mapView.getMap().clear();
         ReadableArray trackArray = option.getArray("tracks");
         LatLng[] latlngs = new LatLng[trackArray.size()];
 

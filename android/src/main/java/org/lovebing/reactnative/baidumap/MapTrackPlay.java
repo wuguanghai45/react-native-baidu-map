@@ -37,6 +37,7 @@ public class MapTrackPlay {
     private Marker mMoveMarker;
     private Handler mHandler;
     private LatLng[] latlngs;
+    private Polyline mCurrentPolyline;
 
 
     // 通过设置间隔时间和距离可以控制速度和图标移动的距离
@@ -74,9 +75,10 @@ public class MapTrackPlay {
             polylines.add(latlngs[index]);
         }
 
-        PolylineOptions polylineOptions = new PolylineOptions().points(polylines).width(10).color(Color.RED);
+        PolylineOptions polylineOptions = new PolylineOptions().points(polylines).width(5).color(Color.BLUE);
 
         mPolyline = (Polyline) mBaiduMap.addOverlay(polylineOptions);
+
         OverlayOptions markerOptions;
 
         //BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(R.drawable.arrow);
@@ -87,6 +89,15 @@ public class MapTrackPlay {
                 .rotate((float) getAngle(0));
         mMoveMarker = (Marker) mBaiduMap.addOverlay(markerOptions);
 
+    }
+
+    private Polyline drawPolyLineStartEnd(LatLng startPoint, LatLng endPoint) {
+      List<LatLng> polylines = new ArrayList<>();
+      polylines.add(startPoint);
+      polylines.add(endPoint);
+      PolylineOptions polylineOptions = new PolylineOptions().points(polylines).width(6).color(Color.GREEN);
+      mPolyline = (Polyline) mBaiduMap.addOverlay(polylineOptions);
+      return mPolyline;
     }
 
     /**
@@ -198,7 +209,6 @@ public class MapTrackPlay {
                     double xMoveDistance = isReverse ? getXMoveDistance(slope) :
                             -1 * getXMoveDistance(slope);
 
-
                     for (double j = startPoint.latitude; !((j > endPoint.latitude) ^ isReverse);
                          j = j - xMoveDistance) {
                         LatLng latLng = null;
@@ -209,6 +219,15 @@ public class MapTrackPlay {
                         }
 
                         final LatLng finalLatLng = latLng;
+
+                        Polyline drawPolyLine = drawPolyLineStartEnd(startPoint, finalLatLng);
+
+                        if(mCurrentPolyline != null) {
+                          mCurrentPolyline.remove();
+                        }
+
+                        mCurrentPolyline = drawPolyLine;
+
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -218,12 +237,15 @@ public class MapTrackPlay {
                                 mMoveMarker.setPosition(finalLatLng);
                             }
                         });
+
                         try {
                             Thread.sleep(TIME_INTERVAL);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
+
+                    drawPolyLineStartEnd(startPoint, endPoint);
 
                 }
             }
