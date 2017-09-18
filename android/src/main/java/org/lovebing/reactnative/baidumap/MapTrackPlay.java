@@ -12,6 +12,7 @@ import android.os.Looper;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatus;
+import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.Marker;
@@ -39,8 +40,8 @@ public class MapTrackPlay {
 
 
     // 通过设置间隔时间和距离可以控制速度和图标移动的距离
-    private static final int TIME_INTERVAL = 80;
-    private static final double DISTANCE = 0.0002;
+    private static final int TIME_INTERVAL = 50;
+    private static final double DISTANCE = 0.005;
 
     public MapTrackPlay(MapView mapView, LatLng[] latlngs) {
       this.mMapView = mapView;
@@ -146,10 +147,12 @@ public class MapTrackPlay {
      * 计算x方向每次移动的距离
      */
     private double getXMoveDistance(double slope) {
+        MapStatus mapStatus = mBaiduMap.getMapStatus();
+        float zoom = mapStatus.zoom;
         if (slope == Double.MAX_VALUE) {
-            return DISTANCE;
+            return DISTANCE / zoom;
         }
-        return Math.abs((DISTANCE * slope) / Math.sqrt(1 + slope * slope));
+        return Math.abs((DISTANCE * slope / zoom) / Math.sqrt(1 + slope * slope));
     }
 
     /**
@@ -164,6 +167,15 @@ public class MapTrackPlay {
 
                     final LatLng startPoint = latlngs[i];
                     final LatLng endPoint = latlngs[i + 1];
+
+                    //设置为中心
+                    MapStatus mapStatus = new MapStatus.Builder()
+                      .target(startPoint)
+                      .build();
+
+                    MapStatusUpdate mapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mapStatus);
+                    mBaiduMap.setMapStatus(mapStatusUpdate);
+
                     mMoveMarker.setPosition(startPoint);
 
                     mHandler.post(new Runnable() {
