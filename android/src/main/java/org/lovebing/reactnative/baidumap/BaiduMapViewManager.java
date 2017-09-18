@@ -52,6 +52,7 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
     private TextView mMarkerText;
     private Overlay circleMarker;
     private Marker mMarker;
+    private MapTrackPlay mapTrack;
 
     public String getName() {
         return REACT_CLASS;
@@ -158,7 +159,11 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
     @ReactProp(name="trackPositions")
     public void setTrackPositions(MapView mapView, ReadableMap option) {
       if(option != null) {
-        mapView.getMap().clear();
+
+        if(mapTrack != null) {
+          mapTrack.stop();
+        }
+
         ReadableArray trackArray = option.getArray("tracks");
         LatLng[] latlngs = new LatLng[trackArray.size()];
 
@@ -170,7 +175,7 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
           latlngs[i] = new LatLng(latitude, longitude);
         }
 
-        MapTrackPlay mapTrack =  new MapTrackPlay(mapView, latlngs);
+        mapTrack = new MapTrackPlay(mapView, latlngs);
         mapTrack.drawPolyLine();
         mapTrack.moveLooper();
       }

@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
@@ -38,6 +39,7 @@ public class MapTrackPlay {
     private Handler mHandler;
     private LatLng[] latlngs;
     private Polyline mCurrentPolyline;
+    private boolean isDestory;
 
 
     // 通过设置间隔时间和距离可以控制速度和图标移动的距离
@@ -49,6 +51,12 @@ public class MapTrackPlay {
       this.mBaiduMap = mapView.getMap();
       this.mHandler = new Handler(Looper.getMainLooper());
       this.latlngs = latlngs;
+    }
+
+    public void stop() {
+      mHandler.removeCallbacksAndMessages(null);
+      isDestory = true;
+      mBaiduMap.clear();
     }
 
     ////@Override
@@ -171,9 +179,9 @@ public class MapTrackPlay {
      */
     public void moveLooper() {
         new Thread() {
-
             public void run() {
-                for (int i = 0; i < latlngs.length - 1; i++) {
+              if(!isDestory) {
+                for (int i = 0; i < latlngs.length - 1 && !isDestory; i++) {
 
 
                     final LatLng startPoint = latlngs[i];
@@ -193,7 +201,7 @@ public class MapTrackPlay {
                         @Override
                         public void run() {
                             // refresh marker's rotate
-                            if (mMapView == null) {
+                            if (mMapView == null || isDestory) {
                                 return;
                             }
                             mMoveMarker.setRotate((float) getAngle(startPoint,
@@ -209,7 +217,7 @@ public class MapTrackPlay {
                     double xMoveDistance = isReverse ? getXMoveDistance(slope) :
                             -1 * getXMoveDistance(slope);
 
-                    for (double j = startPoint.latitude; !((j > endPoint.latitude) ^ isReverse);
+                    for (double j = startPoint.latitude; !((j > endPoint.latitude) ^ isReverse) && !isDestory;
                          j = j - xMoveDistance) {
                         LatLng latLng = null;
                         if (slope == Double.MAX_VALUE) {
@@ -220,20 +228,19 @@ public class MapTrackPlay {
 
                         final LatLng finalLatLng = latLng;
 
-                        Polyline drawPolyLine = drawPolyLineStartEnd(startPoint, finalLatLng);
-
-                        if(mCurrentPolyline != null) {
-                          mCurrentPolyline.remove();
-                        }
-
-                        mCurrentPolyline = drawPolyLine;
-
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                if (mMapView == null) {
+                                if (mMapView == null || isDestory) {
                                     return;
                                 }
+                                Polyline drawPolyLine = drawPolyLineStartEnd(startPoint, finalLatLng);
+
+                                if(mCurrentPolyline != null) {
+                                  mCurrentPolyline.remove();
+                                }
+
+                                mCurrentPolyline = drawPolyLine;
                                 mMoveMarker.setPosition(finalLatLng);
                             }
                         });
@@ -248,6 +255,7 @@ public class MapTrackPlay {
                     drawPolyLineStartEnd(startPoint, endPoint);
 
                 }
+              }
             }
 
         }.start();
