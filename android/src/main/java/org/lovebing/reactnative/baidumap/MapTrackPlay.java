@@ -56,6 +56,7 @@ public class MapTrackPlay {
     public void stop() {
       mHandler.removeCallbacksAndMessages(null);
       isDestory = true;
+
       mBaiduMap.clear();
     }
 
@@ -252,8 +253,9 @@ public class MapTrackPlay {
                         }
                     }
 
-                    drawPolyLineStartEnd(startPoint, endPoint);
-
+                    if(!isDestory) {
+                      drawPolyLineStartEnd(startPoint, endPoint);
+                    }
                 }
               }
             }
