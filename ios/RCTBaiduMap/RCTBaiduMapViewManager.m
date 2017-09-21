@@ -18,6 +18,7 @@ RCT_EXPORT_VIEW_PROPERTY(trafficEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(baiduHeatMapEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(marker, NSDictionary*)
 RCT_EXPORT_VIEW_PROPERTY(markers, NSArray*)
+RCT_EXPORT_VIEW_PROPERTY(circle, NSDictionary*)
 
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 
@@ -113,6 +114,19 @@ didSelectAnnotationView:(BMKAnnotationView *)view {
         return newAnnotationView;
     }
     return nil;
+}
+
+- (BMKOverlayView *)mapView:(BMKMapView *)mapView viewForOverlay:(id <BMKOverlay>)overlay {
+	if ([overlay isKindOfClass:[BMKCircle class]])
+    {
+        BMKCircleView* circleView = [[BMKCircleView alloc] initWithOverlay:overlay];
+        circleView.fillColor = [[UIColor alloc] initWithRed:216/255.0 green:173/255.0 blue:173/255.0 alpha:0.3];
+        circleView.strokeColor = [[UIColor alloc] initWithRed:216/255.0 green:173/255.0 blue:173/255.0 alpha:0.5];
+        circleView.lineWidth = 1.0;
+
+      return circleView;
+    }
+	return nil;
 }
 
 -(void)mapStatusDidChanged: (BMKMapView *)mapView	 {

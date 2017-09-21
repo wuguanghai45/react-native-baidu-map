@@ -18,6 +18,20 @@
     self.zoomLevel = zoom;
 }
 
+-(void)setCircle:(NSDictionary *)option {
+  NSLog(@"setMarker");
+  if(option != nil) {
+    double lat = [RCTConvert double:option[@"latitude"]];
+    double lng = [RCTConvert double:option[@"longitude"]];
+    int radius = [RCTConvert int:option[@"radius"]];
+    CLLocationCoordinate2D coor;
+    coor.latitude = lat;
+    coor.longitude = lng;
+    BMKCircle* circle = [BMKCircle circleWithCenterCoordinate:coor radius:radius];
+    [self addOverlay:circle];
+  }
+}
+
 -(void)setCenterLatLng:(NSDictionary *)LatLngObj {
     double lat = [RCTConvert double:LatLngObj[@"lat"]];
     double lng = [RCTConvert double:LatLngObj[@"lng"]];
@@ -104,6 +118,5 @@
     annotation.coordinate = coor;
     annotation.title = title;
 }
-
 
 @end
