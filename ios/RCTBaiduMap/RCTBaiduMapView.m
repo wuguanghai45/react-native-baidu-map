@@ -10,6 +10,7 @@
 
 @implementation RCTBaiduMapView {
     BMKMapView* _mapView;
+    BMKCircle* circle;
     BMKPointAnnotation* _annotation;
     NSMutableArray* _annotations;
 }
@@ -20,6 +21,10 @@
 
 -(void)setCircle:(NSDictionary *)option {
   NSLog(@"setMarker");
+  if(circle !=nil) {
+    [self removeOverlay:circle];
+  }
+
   if(option != nil) {
     double lat = [RCTConvert double:option[@"latitude"]];
     double lng = [RCTConvert double:option[@"longitude"]];
@@ -27,7 +32,7 @@
     CLLocationCoordinate2D coor;
     coor.latitude = lat;
     coor.longitude = lng;
-    BMKCircle* circle = [BMKCircle circleWithCenterCoordinate:coor radius:radius];
+    circle = [BMKCircle circleWithCenterCoordinate:coor radius:radius];
     [self addOverlay:circle];
   }
 }
