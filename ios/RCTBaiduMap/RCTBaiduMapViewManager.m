@@ -10,6 +10,8 @@
 
 @implementation RCTBaiduMapViewManager;
 
+static RCTBaiduMapView* rctMapView;
+
 RCT_EXPORT_MODULE(RCTBaiduMapView)
 
 RCT_EXPORT_VIEW_PROPERTY(mapType, int)
@@ -28,18 +30,24 @@ RCT_CUSTOM_VIEW_PROPERTY(center, CLLocationCoordinate2D, RCTBaiduMapView) {
 
 
 +(void)initSDK:(NSString*)key {
-    
     BMKMapManager* _mapManager = [[BMKMapManager alloc]init];
     BOOL ret = [_mapManager start:key  generalDelegate:nil];
+
     if (!ret) {
         NSLog(@"manager start failed!");
     }
 }
 
 - (UIView *)view {
-    RCTBaiduMapView* mapView = [[RCTBaiduMapView alloc] init];
-    mapView.delegate = self;
-    return mapView;
+  [self getBaiduMapView].delegate = self;
+  return [self getBaiduMapView];
+}
+
+-(RCTBaiduMapView *)getBaiduMapView{
+    if(rctMapView == nil) {
+      rctMapView = [[RCTBaiduMapView alloc]init];
+    }
+    return rctMapView;
 }
 
 -(void)mapview:(BMKMapView *)mapView
