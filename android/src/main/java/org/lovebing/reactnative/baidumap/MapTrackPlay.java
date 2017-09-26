@@ -97,6 +97,7 @@ public class MapTrackPlay {
                 .position(polylines.get(0))
                 .rotate((float) getAngle(0));
         mMoveMarker = (Marker) mBaiduMap.addOverlay(markerOptions);
+        mMoveMarker.setTitle("位置");
 
     }
 
