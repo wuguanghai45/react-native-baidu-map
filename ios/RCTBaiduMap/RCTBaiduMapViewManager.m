@@ -10,8 +10,6 @@
 
 @implementation RCTBaiduMapViewManager;
 
-static RCTBaiduMapView* rctMapView;
-
 RCT_EXPORT_MODULE(RCTBaiduMapView)
 
 RCT_EXPORT_VIEW_PROPERTY(mapType, int)
@@ -39,16 +37,17 @@ RCT_CUSTOM_VIEW_PROPERTY(center, CLLocationCoordinate2D, RCTBaiduMapView) {
 }
 
 - (UIView *)view {
-  [self getBaiduMapView].delegate = self;
-  return [self getBaiduMapView];
+  RCTBaiduMapView* rctMapView = [[RCTBaiduMapView alloc]init];
+  rctMapView.delegate = self;
+  return rctMapView;
 }
 
--(RCTBaiduMapView *)getBaiduMapView{
-    if(rctMapView == nil) {
-      rctMapView = [[RCTBaiduMapView alloc]init];
-    }
-    return rctMapView;
-}
+//-(RCTBaiduMapView *)getBaiduMapView{
+    //if(rctMapView == nil) {
+      //rctMapView = [[RCTBaiduMapView alloc]init];
+    //}
+    //return rctMapView;
+//}
 
 -(void)mapview:(BMKMapView *)mapView
  onDoubleClick:(CLLocationCoordinate2D)coordinate {
@@ -160,5 +159,6 @@ didSelectAnnotationView:(BMKAnnotationView *)view {
     }
     mapView.onChange(params);
 }
+
 
 @end

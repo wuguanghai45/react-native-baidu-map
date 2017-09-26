@@ -124,4 +124,14 @@
     annotation.title = title;
 }
 
+
+//-(void)dealloc{
+  //NSLog(@"dealloc");
+  ////self.delegate = nil;
+//}
+
+//-(void)willRemoveSubview:(UIView *)subview {
+  //NSLog(@"willRemoveSubview");
+//}
+
 @end
