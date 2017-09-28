@@ -8,7 +8,9 @@
 
 #import "RCTBaiduMapViewManager.h"
 
+
 @implementation RCTBaiduMapViewManager;
+
 
 RCT_EXPORT_MODULE(RCTBaiduMapView)
 
@@ -19,6 +21,7 @@ RCT_EXPORT_VIEW_PROPERTY(baiduHeatMapEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(marker, NSDictionary*)
 RCT_EXPORT_VIEW_PROPERTY(markers, NSArray*)
 RCT_EXPORT_VIEW_PROPERTY(circle, NSDictionary*)
+RCT_EXPORT_VIEW_PROPERTY(trackPositions, NSDictionary*)
 
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 
@@ -113,7 +116,15 @@ didSelectAnnotationView:(BMKAnnotationView *)view {
     [self sendEvent:mapView params:event];
 }
 
-- (BMKAnnotationView *)mapView:(BMKMapView *)mapView viewForAnnotation:(id <BMKAnnotation>)annotation {
+- (BMKAnnotationView *)mapView:(RCTBaiduMapView *)mapView viewForAnnotation:(id <BMKAnnotation>)annotation {
+    NSLog(@"viewForAnnotation %@", annotation.title);
+
+    if(annotation.title == @"sport") {
+       NSLog(@"title %@", annotation.title);
+
+       return [mapView generateSportAnnotationView:annotation];
+    }
+
     if ([annotation isKindOfClass:[BMKPointAnnotation class]]) {
         BMKPinAnnotationView *newAnnotationView = [[BMKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"myAnnotation"];
         newAnnotationView.pinColor = BMKPinAnnotationColorPurple;
@@ -124,7 +135,8 @@ didSelectAnnotationView:(BMKAnnotationView *)view {
 }
 
 - (BMKOverlayView *)mapView:(BMKMapView *)mapView viewForOverlay:(id <BMKOverlay>)overlay {
-	if ([overlay isKindOfClass:[BMKCircle class]])
+    NSLog(@"viewForOverlay");
+    if ([overlay isKindOfClass:[BMKCircle class]])
     {
         BMKCircleView* circleView = [[BMKCircleView alloc] initWithOverlay:overlay];
         circleView.fillColor = [[UIColor alloc] initWithRed:216/255.0 green:173/255.0 blue:173/255.0 alpha:0.3];
@@ -133,8 +145,24 @@ didSelectAnnotationView:(BMKAnnotationView *)view {
 
       return circleView;
     }
-	return nil;
+
+    if ([overlay isKindOfClass:[BMKPolyline class]])
+    {
+        NSLog(@"polygonView");
+
+        BMKPolylineView* polylineView = [[BMKPolylineView alloc] initWithOverlay:overlay];
+        polylineView.strokeColor = [[UIColor alloc] initWithRed:0.0 green:0.5 blue:0.0 alpha:0.6];
+        polylineView.lineWidth = 1.5;
+        return polylineView;
+    }
+
+  return nil;
 }
+
+- (void)mapView:(RCTBaiduMapView *)mapView didAddAnnotationViews:(NSArray *)views {
+   [mapView runArrowMove];
+}
+
 
 -(void)mapStatusDidChanged: (BMKMapView *)mapView	 {
     NSLog(@"mapStatusDidChanged");
