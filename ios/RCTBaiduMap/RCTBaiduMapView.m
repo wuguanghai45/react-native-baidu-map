@@ -280,6 +280,7 @@
     sportAnnotation.coordinate = paths[0];
     sportAnnotation.title = @"sport";
     self.centerCoordinate = paths[0];
+    self.rotateEnabled = NO;
     currentIndex = 0;
     isAnimate = YES;
     [self addAnnotation:sportAnnotation];
