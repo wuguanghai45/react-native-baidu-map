@@ -8,7 +8,9 @@
 
 #import "RCTBaiduMapViewManager.h"
 
+
 @implementation RCTBaiduMapViewManager;
+
 
 RCT_EXPORT_MODULE(RCTBaiduMapView)
 
@@ -18,6 +20,8 @@ RCT_EXPORT_VIEW_PROPERTY(trafficEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(baiduHeatMapEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(marker, NSDictionary*)
 RCT_EXPORT_VIEW_PROPERTY(markers, NSArray*)
+RCT_EXPORT_VIEW_PROPERTY(circle, NSDictionary*)
+RCT_EXPORT_VIEW_PROPERTY(trackPositions, NSDictionary*)
 
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 
@@ -27,19 +31,26 @@ RCT_CUSTOM_VIEW_PROPERTY(center, CLLocationCoordinate2D, RCTBaiduMapView) {
 
 
 +(void)initSDK:(NSString*)key {
-    
     BMKMapManager* _mapManager = [[BMKMapManager alloc]init];
     BOOL ret = [_mapManager start:key  generalDelegate:nil];
+
     if (!ret) {
         NSLog(@"manager start failed!");
     }
 }
 
 - (UIView *)view {
-    RCTBaiduMapView* mapView = [[RCTBaiduMapView alloc] init];
-    mapView.delegate = self;
-    return mapView;
+  RCTBaiduMapView* rctMapView = [[RCTBaiduMapView alloc]init];
+  rctMapView.delegate = self;
+  return rctMapView;
 }
+
+//-(RCTBaiduMapView *)getBaiduMapView{
+    //if(rctMapView == nil) {
+      //rctMapView = [[RCTBaiduMapView alloc]init];
+    //}
+    //return rctMapView;
+//}
 
 -(void)mapview:(BMKMapView *)mapView
  onDoubleClick:(CLLocationCoordinate2D)coordinate {
@@ -105,7 +116,15 @@ didSelectAnnotationView:(BMKAnnotationView *)view {
     [self sendEvent:mapView params:event];
 }
 
-- (BMKAnnotationView *)mapView:(BMKMapView *)mapView viewForAnnotation:(id <BMKAnnotation>)annotation {
+- (BMKAnnotationView *)mapView:(RCTBaiduMapView *)mapView viewForAnnotation:(id <BMKAnnotation>)annotation {
+    NSLog(@"viewForAnnotation %@", annotation.title);
+
+    if(annotation.title == @"sport") {
+       NSLog(@"title %@", annotation.title);
+
+       return [mapView generateSportAnnotationView:annotation];
+    }
+
     if ([annotation isKindOfClass:[BMKPointAnnotation class]]) {
         BMKPinAnnotationView *newAnnotationView = [[BMKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"myAnnotation"];
         newAnnotationView.pinColor = BMKPinAnnotationColorPurple;
@@ -114,6 +133,36 @@ didSelectAnnotationView:(BMKAnnotationView *)view {
     }
     return nil;
 }
+
+- (BMKOverlayView *)mapView:(BMKMapView *)mapView viewForOverlay:(id <BMKOverlay>)overlay {
+    NSLog(@"viewForOverlay");
+    if ([overlay isKindOfClass:[BMKCircle class]])
+    {
+        BMKCircleView* circleView = [[BMKCircleView alloc] initWithOverlay:overlay];
+        circleView.fillColor = [[UIColor alloc] initWithRed:216/255.0 green:173/255.0 blue:173/255.0 alpha:0.3];
+        circleView.strokeColor = [[UIColor alloc] initWithRed:216/255.0 green:173/255.0 blue:173/255.0 alpha:0.5];
+        circleView.lineWidth = 1.0;
+
+      return circleView;
+    }
+
+    if ([overlay isKindOfClass:[BMKPolyline class]])
+    {
+        NSLog(@"polygonView");
+
+        BMKPolylineView* polylineView = [[BMKPolylineView alloc] initWithOverlay:overlay];
+        polylineView.strokeColor = [[UIColor alloc] initWithRed:0.0 green:0.5 blue:0.0 alpha:0.6];
+        polylineView.lineWidth = 1.5;
+        return polylineView;
+    }
+
+  return nil;
+}
+
+- (void)mapView:(RCTBaiduMapView *)mapView didAddAnnotationViews:(NSArray *)views {
+   [mapView runArrowMove];
+}
+
 
 -(void)mapStatusDidChanged: (BMKMapView *)mapView	 {
     NSLog(@"mapStatusDidChanged");
@@ -138,5 +187,6 @@ didSelectAnnotationView:(BMKAnnotationView *)view {
     }
     mapView.onChange(params);
 }
+
 
 @end

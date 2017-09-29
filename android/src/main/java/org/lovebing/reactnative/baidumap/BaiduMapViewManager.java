@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.graphics.Color;
+
 
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.InfoWindow;
@@ -13,11 +15,16 @@ import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
+import com.baidu.mapapi.map.Overlay;
+import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.MapViewLayoutParams;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.map.DotOptions;
+import com.baidu.mapapi.map.CircleOptions;
+import com.baidu.mapapi.map.Stroke;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -41,9 +48,11 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
     private ThemedReactContext mReactContext;
 
     private ReadableArray childrenPoints;
-    private HashMap<String, Marker> mMarkerMap = new HashMap<>();
     private HashMap<String, List<Marker>> mMarkersMap = new HashMap<>();
     private TextView mMarkerText;
+    private Overlay circleMarker;
+    private Marker mMarker;
+    private MapTrackPlay mapTrack;
 
     public String getName() {
         return REACT_CLASS;
@@ -119,19 +128,57 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
         }
     }
 
+    @ReactProp(name="circle")
+    public void setCircle(MapView mapView, ReadableMap option) {
+        if(option != null) {
+          if (circleMarker != null) {
+            circleMarker.remove();
+          }
+          double latitude = option.getDouble("latitude");
+          double longitude = option.getDouble("longitude");
+          int radius = option.getInt("radius");
+
+          LatLng llCircle = new LatLng(latitude, longitude);
+          OverlayOptions ooCircle = new CircleOptions().fillColor(Color.parseColor("#4cFBCCCD"))
+                  .center(llCircle).stroke(new Stroke(2, Color.parseColor("#FFD8ADAD")))
+                  .radius(radius);
+          circleMarker = mapView.getMap().addOverlay(ooCircle);
+        }
+    }
+
     @ReactProp(name="marker")
     public void setMarker(MapView mapView, ReadableMap option) {
         if(option != null) {
-            String key = "marker_" + mapView.getId();
-            Marker marker = mMarkerMap.get(key);
-            if(marker != null) {
-                MarkerUtil.updateMaker(marker, option);
+            if(mMarker != null) {
+              mMarker.remove();
             }
-            else {
-                marker = MarkerUtil.addMarker(mapView, option);
-                mMarkerMap.put(key, marker);
-            }
+            mMarker = MarkerUtil.addMarker(mapView, option);
         }
+    }
+
+    @ReactProp(name="trackPositions")
+    public void setTrackPositions(MapView mapView, ReadableMap option) {
+      if(option != null) {
+
+        if(mapTrack != null) {
+          mapTrack.stop();
+        }
+
+        ReadableArray trackArray = option.getArray("tracks");
+        LatLng[] latlngs = new LatLng[trackArray.size()];
+
+
+        for (int i = 0; i < trackArray.size(); i++) {
+          ReadableMap opt = trackArray.getMap(i);
+          double latitude = opt.getDouble("latitude");
+          double longitude = opt.getDouble("longitude");
+          latlngs[i] = new LatLng(latitude, longitude);
+        }
+
+        mapTrack = new MapTrackPlay(mapView, latlngs);
+        mapTrack.drawPolyLine();
+        mapTrack.moveLooper();
+      }
     }
 
     @ReactProp(name="markers")
@@ -191,8 +238,11 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
                 return writableMap;
             }
 
+            public void onMapStatusChangeStart(MapStatus status) {
+            }
+
             @Override
-            public void onMapStatusChangeStart(MapStatus mapStatus) {
+            public void onMapStatusChangeStart(MapStatus mapStatus, int reason) {
                 sendEvent(mapView, "onMapStatusChangeStart", getEventParams(mapStatus));
             }
 

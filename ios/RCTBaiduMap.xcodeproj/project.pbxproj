@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		844DA4031F725D3E00F16F65 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 844DA4021F725D3E00F16F65 /* libcrypto.a */; settings = {ATTRIBUTES = (Required, ); }; };
+		844DA4051F725D4B00F16F65 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 844DA4041F725D4B00F16F65 /* libssl.a */; settings = {ATTRIBUTES = (Required, ); }; };
 		EF154DCB1D56218D003146DF /* BaiduMapModule.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = EF3C22621CC2C3BE0099E9B6 /* BaiduMapModule.h */; };
 		EF154DCC1D562193003146DF /* RCTBaiduMapViewManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = EF6660E71D55E68000DB8D08 /* RCTBaiduMapViewManager.h */; };
 		EF3C225A1CC2C30D0099E9B6 /* RCTBaiduMapView.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = EF3C22591CC2C30D0099E9B6 /* RCTBaiduMapView.h */; };
@@ -33,6 +35,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		844DA4021F725D3E00F16F65 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = lib/thirdlibs/libcrypto.a; sourceTree = "<group>"; };
+		844DA4041F725D4B00F16F65 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = lib/thirdlibs/libssl.a; sourceTree = "<group>"; };
 		EF3C22561CC2C30D0099E9B6 /* libRCTBaiduMap.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTBaiduMap.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF3C22591CC2C30D0099E9B6 /* RCTBaiduMapView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTBaiduMapView.h; sourceTree = "<group>"; };
 		EF3C225B1CC2C30D0099E9B6 /* RCTBaiduMapView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTBaiduMapView.m; sourceTree = "<group>"; };
@@ -51,17 +55,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				844DA4051F725D4B00F16F65 /* libssl.a in Frameworks */,
+				844DA4031F725D3E00F16F65 /* libcrypto.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		844DA4011F725D3E00F16F65 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				844DA4041F725D4B00F16F65 /* libssl.a */,
+				844DA4021F725D3E00F16F65 /* libcrypto.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		EF3C224D1CC2C30D0099E9B6 = {
 			isa = PBXGroup;
 			children = (
 				EF3C22581CC2C30D0099E9B6 /* RCTBaiduMap */,
 				EF3C22571CC2C30D0099E9B6 /* Products */,
+				844DA4011F725D3E00F16F65 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -247,6 +263,10 @@
 					"$(SRCROOT)/../../react-native/Libraries/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/lib/thirdlibs",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"$(inherited)",
@@ -266,6 +286,10 @@
 					"$(SRCROOT)/../../react-native/Libraries/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/lib/thirdlibs",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"$(inherited)",

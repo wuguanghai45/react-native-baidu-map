@@ -5,7 +5,7 @@
 
 --------------------------------------------------------------------------------------
 
-iOS 地图 SDK v3.0.0是适用于iOS系统移动设备的矢量地图开发包
+iOS 地图 SDK v3.4.0是适用于iOS系统移动设备的矢量地图开发包
 
 --------------------------------------------------------------------------------------
 
@@ -35,81 +35,49 @@ LBS云检索：支持查询存储在LBS云内的自有数据；
 
 
 --------------------------------------------------------------------------------------
-
-注意：百度地图iOS SDK向广大开发者提供了配置更简单的 .framework形式的开发包，请开发者选择此种类型的开发包使用。
-
-自v2.9.0起，百度地图iOS SDK将不再提供 .a形式的开发包。
-   
-自v2.9.0起，采用分包的形式提供 .framework包，请广大开发者使用时确保各分包的版本保持一致。
-
-其中BaiduMapAPI_Base.framework为基础包，使用SDK任何功能都需导入，其他分包可按需导入。
-
-
----------------------------------------------------------------------------------------
-
- 【 新版提示 】
- 1.自v3.0.0起，iOS SDK全面支持ipv6网格
  
- 【 新  增 】
-   基础地图
- 1、新增室内地图功能
- 新增室内地图信息类：BMKBaseIndoorMapInfo
- BMKMapView新增接口:
- /// 设定地图是否显示室内图（包含室内图标注），默认不显示
- @property (nonatomic, assign) BOOL baseIndoorMapEnabled;
- /// 设定室内图标注是否显示，默认YES，仅当显示室内图（baseIndoorMapEnabled为YES）时生效
- @property (nonatomic, assign) BOOL showIndoorMapPoi;
- // 设置室内图楼层
- - (BMKSwitchIndoorFloorError)switchBaseIndoorMapFloor:(NSString*)strFloor withID:(NSString*)strID;
- // 获取当前聚焦的室内图信息
- - (BMKBaseIndoorMapInfo*)getFocusedBaseIndoorMapInfo;
- BMKMapViewDelegate新增接口：
- //地图进入/移出室内图会调用此接口
- - (void)mapview:(BMKMapView *)mapView baseIndoorMapWithIn:(BOOL)flag baseIndoorMapInfo:(BMKBaseIndoorMapInfo *)info;
- 2、普通地图与个性化地图切换可以自由切换，BMKMapView新增接口:
- + (void)enableCustomMapStyle:(BOOL) enable;
- 3、个性化地图配置json文件出错时，打印log提示
- 4、设置mapPadding时可控制地图中心是否跟着移动，BMKMapView新增接口:
- @property (nonatomic) BOOL updateTargetScreenPtWhenMapPaddingChanged;
- 5、BMKMapPoi中新增属性：
- ///点标注的uid，可能为空
- @property (nonatomic,strong) NSString* uid;
  
-   检索功能
- 1、新增室内POI检索
- 新增室内POI检索参数信息类：BMKPoiIndoorSearchOption
- 新增室内POI搜索结果类：BMKPoiIndoorResult
- 新增室内POI信息类：BMKPoiIndoorInfo
- BMKPoiSearch新增接口：
- //poi室内检索
- - (BOOL)poiIndoorSearch:(BMKPoiIndoorSearchOption*)option;
- BMKPoiSearchDelegate新增接口：
- //返回POI室内搜索结果
-- (void)onGetPoiIndoorResult:(BMKPoiSearch*)searcher result:(BMKPoiIndoorResult*)poiIndoorResult errorCode:(BMKSearchErrorCode)errorCode;
- 2、驾车路线规划结果新增3个属性：打车费用信息、拥堵米数、红路灯个数，BMKDrivingRouteLine新增接口：
- ///路线红绿灯个数
- @property (nonatomic, assign) NSInteger lightNum;
- ///路线拥堵米数，发起请求时需设置参数 drivingRequestTrafficType = BMK_DRIVING_REQUEST_TRAFFICE_TYPE_PATH_AND_TRAFFICE 才有值
- @property (nonatomic, assign) NSInteger congestionMetres;
- ///路线预估打车费(元)，负数表示无打车费信息
- @property (nonatomic, assign) NSInteger taxiFares;
- 3、busline检索新增参考票价和上下线行信息，BMKBusLineResult新增接口：
- ///公交线路方向
- @property (nonatomic, strong) NSString* busLineDirection;
- ///起步票价
- @property (nonatomic, assign) CGFloat basicPrice;
- ///全程票价
- @property (nonatomic, assign) CGFloat totalPrice;
- 4、poi检索结果新增是否有全景信息，BMKPoiInfo新增接口：
- @property (nonatomic, assign) BOOL panoFlag;
+ 【 新 版 提 示 】
+ 【 注 意 】
+ 1、自v3.2.0起，百度地图iOS SDK全面支持HTTPS，需要广大开发者导入第三方openssl静态库：libssl.a和libcrypto.a（存放于thirdlib目录下）
+ 添加方法：在 TARGETS->Build Phases-> Link Binary With Libaries中点击“+”按钮，在弹出的窗口中点击“Add Other”按钮，选择libssl.a和libcrypto.a添加到工程中 。
  
-   计算工具
- 新增调起百度地图客户端全景功能
- 新增调起百度地图全景类：BMKOpenPanorama
- 新增调起百度地图全景参数类：BMKOpenPanoramaOption
- 新增调起百度地图全景delegate：BMKOpenPanoramaDelegate
+ 2、支持CocoaPods导入
+ pod setup //更新CocoPods的本地库
+ pod search BaiduMapKit  //查看最新地图SDK
  
- 【 修  复 】
- 1、修复反复添加移除离线瓦片图时偶现的crash问题
- 2、修复上传AppStore时提示访问私有api:-setOverlayGeometryDelegate:的问题
- 3、修复地图网络解析时偶现的crash问题
+ 【 新 增 】
+ 【基 础 地 图】
+ 1.新增当双击手势放大地图时，可以设置地图中心点是否移动至点击处的属性
+   BMKMapView新增：
+   ///双击手势放大地图时, 设置为YES, 地图中心点移动至点击处; 设置为NO，地图中心点不变；默认为YES;
+   @property(nonatomic, getter=isChangeCenterWithDoubleTouchPointEnabled) BOOL ChangeCenterWithDoubleTouchPointEnabled;
+
+ 2.支持标注锁定在屏幕固定位置
+    BMKPointAnnotation新增：
+    ///Annotation固定在指定屏幕位置,  必须与screenPointToLock一起使用。 注意：拖动Annotation isLockedToScreen会被设置为false。
+    ///若isLockedToScreen为true，拖动地图时annotaion不会跟随移动；
+    ///若isLockedToScreen为false，拖动地图时annotation会跟随移动。
+    @property (nonatomic, assign) BOOL isLockedToScreen;
+
+    ///标注在屏幕中锁定的位置，注意：地图初始化后才能设置screenPointToLock。可以在地图加载完成的回调方法：mapViewDidFinishLoading中使用此属性。
+    @property (nonatomic, assign) CGPoint screenPointToLock;
+
+ 3.新增接口：设定地理范围在屏幕中的显示区域
+   BMKMapView新增：
+/**
+ *根据当前mapView的窗口大小，预留insets指定的边界区域后，将mapRect指定的地理范围显示在剩余的区域内，并尽量充满
+ *@param mapRect 要显示的地图范围，用直角坐标系表示
+ *@param insets 屏幕四周预留的最小边界（mapRect的内容不会显示在该边界范围内）
+ *@param animate 是否采用动画效果
+ */
+- (void)fitVisibleMapRect:(BMKMapRect)mapRect edgePadding:(UIEdgeInsets)insets withAnimated:(BOOL)animate;
+
+ 【 优 化 】
+ 1.解决反复创建和销毁mapView时内存泄漏的问题
+ 2.对拖动标注时的弹跳动画效果进行优化
+ 3.修复mapView调用selectAnnotation方法时，回调didSelectAnnotationView不调用的问题。
+ 4.修复行政区域检索福建和浙江区域没有返回数据的问题
+ 5.修复部分使用场景下，设置mapPadding时，overlay位置偏移的问题 
+ 6.修复部分使用场景下，加载mapView闪黑屏的问题
+
